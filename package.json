@@ -1,0 +1,12 @@
+{
+  "name": "scootjs-aws",
+  "version": "0.1.0",
+  "description": "Prototype Scoot runtime driver",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Braden Hitchcock <developer.hitchcock@gmail.com>",
+  "license": "MIT"
+}
