@@ -10,6 +10,12 @@
   "author": "Braden Hitchcock <developer.hitchcock@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.579.0"
+    "aws-sdk": "^2.579.0",
+    "js-yaml": "^3.13.1",
+    "serverless": "^1.58.0",
+    "uuid": "^3.3.3"
+  },
+  "peerDependencies": {
+    "scootjs": "^0.1.0"
   }
 }
