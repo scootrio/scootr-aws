@@ -1,3 +1,8 @@
+# Build and Testing Artifacts
+.scoots/
+serverless.yml
+serverless.yaml
+
 # IDE
 .vscode/
 

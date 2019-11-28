@@ -1,6 +1,8 @@
-const AWSDriver = require('../lib');
+const AWSDriver = require('..');
+const { US_WEST_2 } = require('../regions');
+const { NODE_12X } = require('../runtimes');
 const AWS = require('aws-sdk');
-const { compute, storage, project, event } = require('scootjs');
+const { compute, storage, project } = require('scootjs');
 const { http } = require('scootjs/events');
 
 AWS.config.getCredentials(function(err) {
@@ -12,13 +14,21 @@ AWS.config.getCredentials(function(err) {
   }
 });
 
-let e = event('id').type(http('GET', 'users'));
-let c = compute('id');
-let s = storage('id');
+let e1 = http('my-event')
+  .method('GET')
+  .path('users');
+let e2 = http('my-other-event')
+  .method('POST')
+  .path('todos');
+let c1 = compute('my-compute', NODE_12X)
+  .env('PORT', '4567')
+  .env('NAME', 'my-name')
+  .on(e1);
+let c2 = compute('my-other-compute', NODE_12X).on(e2);
+let s = storage('my-storage');
 
-project('id')
+project('id', US_WEST_2)
   .name('My Project')
-  .with(e)
-  .with(c)
+  .withAll([e1, e2, c1, c2])
   .with(s)
-  .deploy(new AWSDriver());
+  .deploy(AWSDriver);
