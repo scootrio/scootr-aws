@@ -16,21 +16,17 @@ class AWSDriver {
     this.tasks = [];
   }
 
-  deployStorage(resource) {
+  onStorage(resource) {
     this.config.addStorage(resource);
   }
 
-  deployCompute(resource) {
+  onCompute(resource) {
     this.config.addCompute(resource);
   }
 
-  connect(connection) {
-    console.log('Deploying connection');
-  }
+  onConnection(connection) {}
 
-  initializeEvent(event) {
-    console.log('Initializing Event');
-  }
+  onEvent(event) {}
 
   async finish() {
     try {
