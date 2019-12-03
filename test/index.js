@@ -1,8 +1,9 @@
 const AWSDriver = require('..');
 const { US_WEST_2 } = require('../regions');
 const { NODE_12X } = require('../runtimes');
+const { DYNAMO_DB, Schema } = require('../storage');
 const AWS = require('aws-sdk');
-const { compute, storage, project } = require('scootjs');
+const { compute, storage, application } = require('scootjs');
 const { http } = require('scootjs/events');
 
 AWS.config.getCredentials(function(err) {
@@ -25,10 +26,20 @@ let c1 = compute('my-compute', NODE_12X)
   .env('NAME', 'my-name')
   .on(e1);
 let c2 = compute('my-other-compute', NODE_12X).on(e2);
-let s = storage('my-storage');
+let s = storage('my-storage', DYNAMO_DB)
+  .table('UserTable')
+  .primary('ID', Schema.STRING)
+  .col('Name', Schema.STRING)
+  .col('Age', Schema.INT);
 
-project('id', US_WEST_2)
-  .name('My Project')
-  .withAll([e1, e2, c1, c2])
-  .with(s)
-  .deploy(AWSDriver);
+(async () => {
+  try {
+    await application('id', US_WEST_2)
+      .name('my-project')
+      .withAll([e1, e2, c1, c2])
+      .with(s)
+      .deploy(AWSDriver);
+  } catch (err) {
+    console.log(err);
+  }
+})();

@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const scoot = require('scootjs');
 const Config = require('./lib/config');
 const fs = require('fs');
 
@@ -14,19 +13,12 @@ class AWSDriver {
     this.tasks = [];
   }
 
-  deploy(resource) {
-    switch (resource.type) {
-      case scoot.Types.COMPUTE:
-        this.config.addCompute(resource);
-        break;
+  deployStorage(resource) {
+    this.config.addStorage(resource);
+  }
 
-      case scoot.Types.STORAGE:
-        this.config.addStorage(resource);
-        break;
-
-      default:
-        throw new Error('Unsupported resource type in deployment:', resource.type);
-    }
+  deployCompute(resource) {
+    this.config.addCompute(resource);
   }
 
   connect(connection) {
@@ -39,16 +31,42 @@ class AWSDriver {
 
   finish() {
     return new Promise((resolve, reject) => {
-      fs.mkdir('.scoots', err => {
+      fs.exists('.scoots', async exists => {
+        try {
+          if (exists) {
+            await this._write();
+            resolve();
+          } else {
+            fs.mkdir('.scoots', async err => {
+              if (err) return reject(new Error('Failed to write config file: ' + err.message));
+              try {
+                await this._write();
+              } catch (err) {
+                reject(err);
+              }
+              resolve();
+            });
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
+  }
+
+  _write() {
+    return new Promise((resolve, reject) => {
+      let yaml = this.config.dump();
+      fs.writeFile('.scoots/serverless.yml', yaml, { encoding: 'utf8' }, err => {
         if (err) return reject(new Error('Failed to write config file: ' + err.message));
-        let yaml = this.config.dump();
-        fs.writeFile('.scoots/serverless.yml', yaml, { encoding: 'utf8' }, err => {
-          if (err) return reject(new Error('Failed to write config file: ' + err.message));
-          resolve();
-        });
+        resolve();
       });
     });
   }
 }
 
-module.exports = AWSDriver;
+function driver(config) {
+  return new AWSDriver(config);
+}
+
+module.exports = driver;
