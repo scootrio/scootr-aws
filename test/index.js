@@ -1,19 +1,9 @@
-const AWSDriver = require('..');
+const driver = require('..');
 const { US_WEST_2 } = require('../regions');
 const { NODE_12X } = require('../runtimes');
 const { DYNAMO_DB, Schema } = require('../storage');
-const AWS = require('aws-sdk');
 const { compute, storage, application } = require('scootjs');
 const { http } = require('scootjs/events');
-
-AWS.config.getCredentials(function(err) {
-  if (err) console.log(err.stack);
-  // credentials not loaded
-  else {
-    console.log('Access key:', AWS.config.credentials.accessKeyId);
-    console.log('Secret access key:', AWS.config.credentials.secretAccessKey);
-  }
-});
 
 let e1 = http('my-event')
   .method('GET')
@@ -38,7 +28,7 @@ let s = storage('my-storage', DYNAMO_DB)
       .name('my-project')
       .withAll([e1, e2, c1, c2])
       .with(s)
-      .deploy(AWSDriver);
+      .deploy(driver);
   } catch (err) {
     console.log(err);
   }

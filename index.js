@@ -1,8 +1,11 @@
 const AWS = require('aws-sdk');
 const Config = require('./lib/config');
 const fs = require('fs');
+const { spawn } = require('child_process');
+const path = require('path');
 
-const profile = process.env.AWS_PROFILE | 'scootr';
+const profile = process.env.AWS_PROFILE || 'scootr';
+const workdir = process.env.SCOOTR_WORKDIR || path.join(process.cwd(), '.scoots');
 
 var credentials = new AWS.SharedIniFileCredentials({ profile });
 AWS.config.credentials = credentials;
@@ -29,26 +32,26 @@ class AWSDriver {
     console.log('Initializing Event');
   }
 
-  finish() {
+  async finish() {
+    try {
+      await this._prepare();
+      await this._write();
+      await this._deploy();
+    } catch (err) {
+      throw new Error(`Failed to finish deployment: ${err.message}`);
+    }
+  }
+
+  _prepare() {
     return new Promise((resolve, reject) => {
-      fs.exists('.scoots', async exists => {
-        try {
-          if (exists) {
-            await this._write();
+      fs.exists(workdir, async exists => {
+        if (!exists) {
+          fs.mkdir(workdir, async err => {
+            if (err) return reject(new Error(`Failed to create directory '${workdir}': ${err.message}`));
             resolve();
-          } else {
-            fs.mkdir('.scoots', async err => {
-              if (err) return reject(new Error('Failed to write config file: ' + err.message));
-              try {
-                await this._write();
-              } catch (err) {
-                reject(err);
-              }
-              resolve();
-            });
-          }
-        } catch (err) {
-          reject(err);
+          });
+        } else {
+          resolve();
         }
       });
     });
@@ -57,12 +60,33 @@ class AWSDriver {
   _write() {
     return new Promise((resolve, reject) => {
       let yaml = this.config.dump();
-      fs.writeFile('.scoots/serverless.yml', yaml, { encoding: 'utf8' }, err => {
+      let serverlessFile = path.join(workdir, 'serverless.yml');
+      fs.writeFile(serverlessFile, yaml, { encoding: 'utf8' }, err => {
         if (err) return reject(new Error('Failed to write config file: ' + err.message));
         resolve();
       });
     });
   }
+
+  _deploy() {
+    return new Promise((resolve, reject) => {
+      let cmd = 'serverless';
+      let args = ['deploy'];
+      console.log(`Running '${commandString(cmd, args)}' at ${workdir}`);
+      let child = spawn(cmd, args, { cwd: workdir, stdio: 'inherit' });
+      child.on('close', code => {
+        if (code === 0) {
+          return resolve();
+        }
+        // Something went wrong
+        reject(new Error(`${commandString(cmd, args)} failed`));
+      });
+    });
+  }
+}
+
+function commandString(cmd, args) {
+  return `${cmd}${args.length > 0 ? ' ' + args.join(' ') : ''}`;
 }
 
 function driver(config) {
