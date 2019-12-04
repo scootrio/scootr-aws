@@ -14,8 +14,43 @@ let e2 = http('my-other-event')
 let c1 = compute('my-compute', NODE_12X)
   .env('PORT', '4567')
   .env('NAME', 'my-name')
-  .on(e1);
-let c2 = compute('my-other-compute', NODE_12X).on(e2);
+  .on(e1).code(`
+  'use strict';
+
+  module.exports = async event => {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(
+        {
+          message: 'Hello from my-compute.js!',
+          input: event,
+        },
+        null,
+        2
+      ),
+    };
+  };
+  `);
+let c2 = compute('my-other-compute', NODE_12X)
+  .tag('stage', 'dev')
+  .tag('product', 'x')
+  .on(e2).code(`
+  'use-strict';
+
+  module.exports = async event => {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(
+        {
+          message: 'Hello from my-other-compute.js!',
+          input: event
+        },
+        null,
+        2
+      )
+    };
+  };
+`);
 let s = storage('my-storage', DYNAMO_DB)
   .table('UserTable')
   .primary('ID', Schema.STRING)
