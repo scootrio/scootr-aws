@@ -5,5 +5,13 @@ module.exports = {
     STRING: 'S',
     INT: 'N',
     FLOAT: 'N'
+  },
+
+  Actions: {
+    CREATE: 'create',
+    READ: 'read',
+    UPDATE: 'update',
+    DELETE: 'delete',
+    ALL: '*'
   }
 };

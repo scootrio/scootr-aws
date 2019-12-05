@@ -33,6 +33,7 @@ class AWSDriver {
   }
 
   onConnection(connection) {
+    this.config.addConnection(connection);
     this.resources.connections.push(connection);
   }
 
