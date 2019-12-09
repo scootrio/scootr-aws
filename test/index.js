@@ -2,8 +2,8 @@ const driver = require('..');
 const { US_WEST_2 } = require('../regions');
 const { NODE_12X } = require('../runtimes');
 const { DYNAMO_DB, Schema, Actions } = require('../storage');
-const { compute, storage, application, connection } = require('scootjs');
-const { http } = require('scootjs/events');
+const { compute, storage, application, connection } = require('scootr');
+const { http } = require('scootr/events');
 
 let e1 = http('my-event')
   .method('GET')

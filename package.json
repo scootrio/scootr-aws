@@ -1,5 +1,5 @@
 {
-  "name": "scootjs-aws",
+  "name": "scootr-aws",
   "version": "0.1.0",
   "description": "Prototype Scoot runtime driver",
   "main": "lib/index.js",
@@ -20,6 +20,6 @@
     "uuid": "^3.3.3"
   },
   "peerDependencies": {
-    "scootjs": "^0.1.0"
+    "scootr": "^0.1.0"
   }
 }
