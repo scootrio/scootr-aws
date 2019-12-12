@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 const AWS = require('aws-sdk');
 const Config = require('./lib/config');
 const { buildWorkspace } = require('./lib/workspace');
-const { info, error } = require('./lib/logger');
+const { debug, info, error } = require('./lib/logger');
 
 const profile = process.env.AWS_PROFILE || 'scootr';
 const workdir = process.env.SCOOTR_WORKDIR || path.join(process.cwd(), '.scoots');
@@ -66,19 +66,24 @@ class AWSDriver {
       let result;
       child.stdout.on('data', data => {
         data = data.toString();
+        debug(data);
         if (failure) {
           if (result) return;
         }
         if (finished) {
           if (data.includes('endpoints')) {
             // Get the endpoint methods and URLs
-            let regex = new RegExp(`^  (.*) - (.*\/${result.meta.stage}\/(.*))$`, 'gm');
+            let regex = new RegExp(`^  (.*) - (.*\/${result.meta.stage}(.*))$`, 'gm');
             let current;
             while ((current = regex.exec(data)) !== null) {
-              result.events.http[current[3]] = {
-                method: current[1],
-                url: current[2]
-              };
+              if (!result.events.http[current[3]]) {
+                result.events.http[current[3]] = {
+                  methods: [current[1]],
+                  url: current[2]
+                };
+              } else {
+                result.events.http[current[3]].methods.push(current[1]);
+              }
             }
           } else if (data.includes('functions')) {
             // Get the deployed compute information
@@ -109,7 +114,7 @@ class AWSDriver {
           while ((current = regex.exec(data)) !== null) {
             result.meta[current[1]] = current[2];
           }
-        } else {
+        } else if (data.includes('Error')) {
           failure = true;
           let regex = /Error: (.*) *$/gm;
           let parsed = regex.exec(data);
