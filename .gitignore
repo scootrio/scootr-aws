@@ -2,6 +2,7 @@
 .scoots/
 serverless.yml
 serverless.yaml
+.scoots-test/
 
 # IDE
 .vscode/
