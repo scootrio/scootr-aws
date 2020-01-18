@@ -4,7 +4,7 @@
   "description": "Prototype Scoot runtime driver",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "node test/index.test.js"
+    "test": "SCOOTR_AWS_LOG_LEVEL=trace node test/index.test.js | pino-pretty"
   },
   "keywords": [],
   "author": "Braden Hitchcock <developer.hitchcock@gmail.com>",
@@ -15,11 +15,15 @@
     "change-case": "^4.0.1",
     "ejs": "^3.0.1",
     "js-yaml": "^3.13.1",
+    "pino": "^5.16.0",
     "serverless": "^1.61.2",
     "serverless-iam-roles-per-function": "^2.0.2",
     "uuid": "^3.3.3"
   },
   "peerDependencies": {
     "scootr": "^0.1.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^3.5.0"
   }
 }
