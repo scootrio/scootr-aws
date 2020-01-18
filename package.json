@@ -4,7 +4,8 @@
   "description": "Prototype Scoot runtime driver",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "SCOOTR_AWS_LOG_LEVEL=trace node test/index.test.js | pino-pretty"
+    "test": "SCOOTR_AWS_LOG_LEVEL=trace node test/index.test.js | pino-pretty",
+    "test-python": "SCOOTR_AWS_LOG_LEVEL=trace node test/python.test.js | pino-pretty"
   },
   "keywords": [],
   "author": "Braden Hitchcock <developer.hitchcock@gmail.com>",
