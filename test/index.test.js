@@ -107,7 +107,7 @@ const topic1 = topic('MyTopic')
         .on(
           http('MyGetEvent')
             .method('GET')
-            .path('/event')
+            .path('/event/{id}')
         )
         .use(
           storage('MyStorage', types.KeyValueStorage)
