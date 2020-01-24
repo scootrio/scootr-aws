@@ -100,7 +100,7 @@ const topic1 = topic('MyTopic')
   const app = application('MyApplication')
     .with(
       compute('MyFirstCompute')
-        .runtime(enums.Runtimes.Node12x)
+        .runtime(enums.Runtimes.Node_12_X)
         .code(code1)
         .tag('stage', 'dev')
         .tag('product', 'x')
@@ -121,7 +121,7 @@ const topic1 = topic('MyTopic')
     )
     .with(
       compute('MySecondCompute')
-        .runtime(enums.Runtimes.Node12x)
+        .runtime(enums.Runtimes.Node_12_X)
         .code(code2)
         .on(
           http('MyPostEvent')
@@ -132,7 +132,7 @@ const topic1 = topic('MyTopic')
     )
     .with(
       compute('MyThirdCompute')
-        .runtime(enums.Runtimes.Node12x)
+        .runtime(enums.Runtimes.Node_12_X)
         .code(code3)
         .on(topic1)
     );
