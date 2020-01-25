@@ -27,7 +27,7 @@ def endpoint(event, context):
   const app = application('MyPythonApplication')
     .with(
       compute('MyFirstCompute')
-        .runtime(enums.Runtimes.Python3_8)
+        .runtime(enums.Runtimes.Python_3_8)
         .code(code1)
         .tag('stage', 'dev')
         .tag('product', 'x')
@@ -39,7 +39,7 @@ def endpoint(event, context):
     )
     .with(
       compute('MySecondCompute')
-        .runtime(enums.Runtimes.Python3_8)
+        .runtime(enums.Runtimes.Python_3_8)
         .code(code2)
         .on(
           http('MyPostEvent')
